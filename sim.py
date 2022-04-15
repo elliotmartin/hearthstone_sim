@@ -9,32 +9,40 @@
 import random
 import copy
 
-debug = False
+debug = True
 
 def do_sim(target_turns):
     turn = 0
     hand, deck, coin = init_sim()
     hand = sim_mull(hand, deck, coin)
     if debug:
-        print('starting hand ', hand, 'coin ', coin)
+        print('starting hand:', print_hand(hand), 'coin:', coin)
     while turn < target_turns:
         turn += 1
-        if (5 in hand) or (6 in hand):
+        if debug:
+            print('turn: ', turn)
+        if 5 in hand:
             return False
+        if 6 in hand:
+            return False
+        if deck[-1] == 4:
+            return True
         if 8 in hand:
             if deck[-1] in [5, 6]:
                 return False
             return True
         if 4 in hand:
             if deck[-1] in [5, 6]:
+                print("minion on top")
                 return False
             if turn >= 3:
                 return True
             elif (turn == 2) and (7 in hand):
                 return True
-        if debug:
-            print('turn: ', turn)
         hand = sim_turn(hand, deck, turn)
+    if debug:
+        print("didnt find")
+    return False
 
 def init_sim():
     deck = [1, 1, 2, 2, 3, 3, 4, 4, 5, 6]
@@ -59,7 +67,7 @@ def sim_turn(hand, deck, turn):
     hand.append(deck.pop())
     #switch in hand, so do nothing
     if debug:
-        print("hand: ", hand)
+        print("hand: ", print_hand(hand))
     if 4 in hand:
         if 1 in hand:
             if debug:
@@ -220,11 +228,25 @@ def do_mull(hand, to_toss, deck, coin):
 
     return hand
 
+def print_hand(hand):
+    hand_map = {1: "illuminate", 2: "shard", 3: "thrive", 4: "switch", 5: "twin", 6: "dwing",
+                7: "coin", 8: "free switch", 9: "free thrive"}
+    pretty_hand = []
+    for item in hand:
+        if item in hand_map.keys():
+            pretty_hand.append(hand_map[item])
+        else:
+            pretty_hand.append(item)
+    return pretty_hand
+
+
 if __name__ == '__main__':
-    attempts = 1000000
+    attempts = 5
     success = 0
     for i in range(attempts):
-        if do_sim(4):
+        res = do_sim(6)
+        print(res, "\n")
+        if res:
             success += 1
     print(success/attempts)
 
