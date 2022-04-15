@@ -105,35 +105,42 @@ def play_illuminate(hand, deck):
         deck.remove(2)
         deck.append(2)
 
-#TODO discover % doesnt change with duplicates, so this is slightly inaccurate
 def play_thrive(hand, deck):
-    deck_copy = copy.deepcopy(deck)
+    deck_copy = list(set(copy.deepcopy(deck)))
     options = []
-    for i in range(2):
+    choose = []
+    rev = bool(random.getrandbits(1))
+
+    if 5 in deck_copy:
+        deck_copy.remove(5)
+    if 6 in deck_copy:
+        deck_copy.remove(6)
+
+    for i in range(3):
         options.append(random.choice(deck_copy))
         random.shuffle(deck_copy)
         deck_copy.remove(options[i])
+    print("thrive options ",options)
     if 4 in options:
-        deck.remove(4)
-        hand.append(4)
+        choose.append(4)
     if 4 in hand:
         if 1 in options:
-            deck.remove(1)
-            hand.append(1)
+            choose.append(1)
         if 3 in options:
-            deck.remove(3)
-            hand.append(3)
+            choose.append(3)
     else:
         if 3 in options:
-            deck.remove(3)
-            hand.append(3)
+            choose.append(3)
         if 1 in options:
-            deck.remove(1)
-            hand.append(1)
+            choose.append(1)
     if 2 in options:
-        deck.remove(2)
-        hand.append(2)
+        choose.append(2)
+    else:
+        choose.append(options[0])
 
+    card = choose[0]
+    idxs = [i for i in range(len(deck)) if deck[i] == card]
+    hand.append(deck.pop(random.choice(idxs)))
 
 
 def trade_shard(hand, deck):
