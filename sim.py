@@ -83,28 +83,39 @@ def sim_turn(hand, deck, turn):
     return hand
 
 def play_illuminate(hand, deck):
-    options = deck[0:2]
+    options = deck[0:3]
+    print("illum options",options)
     if 4 in options:
         deck.remove(4)
         deck.append(8)
+        return
     if 4 in hand:
         if 1 in options:
             deck.remove(1)
             deck.append(1)
+            return
         if 3 in options:
             deck.remove(3)
             deck.append(9)
+            return
     else:
         if 3 in options:
             deck.remove(3)
             deck.append(9)
+            return
         if 1 in options:
             deck.remove(1)
             deck.append(1)
+            return
     if 2 in options:
         deck.remove(2)
         deck.append(2)
-
+        return
+    filt = lambda x: x not in [5, 6]
+    pool = list(set(filter(filt, options)))
+    deck.remove(pool[0])
+    deck.append(pool[0])
+    
 def play_thrive(hand, deck):
     deck_copy = list(set(copy.deepcopy(deck)))
     options = []
