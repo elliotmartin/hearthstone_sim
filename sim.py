@@ -9,16 +9,32 @@
 import random
 import copy
 
+debug = False
+
 def do_sim(target_turns):
     turn = 0
     hand, deck, coin = init_sim()
     hand = sim_mull(hand, deck, coin)
-    print('starting hand ', hand, 'coin ', coin)
+    if debug:
+        print('starting hand ', hand, 'coin ', coin)
     while turn < target_turns:
         turn += 1
-        print('turn: ', turn)
+        if (5 in hand) or (6 in hand):
+            return False
+        if 8 in hand:
+            if deck[-1] in [5, 6]:
+                return False
+            return True
+        if 4 in hand:
+            if deck[-1] in [5, 6]:
+                return False
+            if turn == 3:
+                return True
+            elif (turn == 2) and (7 in hand):
+                return True
+        if debug:
+            print('turn: ', turn)
         hand = sim_turn(hand, deck, turn)
-    return hand
 
 def init_sim():
     deck = [1, 1, 2, 2, 3, 3, 4, 4, 5, 6]
@@ -42,34 +58,40 @@ def sim_turn(hand, deck, turn):
     mana = turn
     hand.append(deck.pop())
     #switch in hand, so do nothing
-    print("hand: ", hand)
+    if debug:
+        print("hand: ", hand)
     if 4 in hand:
         if 1 in hand:
-            print('play illum switch in hand')
+            if debug:
+                print('play illum switch in hand')
             hand.remove(1)
             play_illuminate(hand, deck)
         return hand
     if 8 in hand:
         if 1 in hand:
-            print('play illum free switch in hand')
+            if debug:
+                print('play illum free switch in hand')
             hand.remove(1)
             play_illuminate(hand, deck)
         return hand
     #prioritize free thrive
     if 9 in hand:
-        print('play free thrive')
+        if debug:
+            print('play free thrive')
         hand.remove(9)
         play_thrive(hand, deck)
     #then thrive
     if 3 in hand:
         if mana >= 2:
-            print('play thrive')
+            if debug:
+                print('play thrive')
             hand.remove(3)
             mana -= 2
             play_thrive(hand, deck)
     #then illuminate
     if 1 in hand:
-        print('play illum')
+        if debug:
+            print('play illum')
         hand.remove(1)
         play_illuminate(hand, deck)
         PLAYED_ILLUM = True
@@ -77,7 +99,8 @@ def sim_turn(hand, deck, turn):
     if 2 in hand:
         if mana >= 1:
             if not PLAYED_ILLUM:
-                print('cycle shard')
+                if debug:
+                    print('cycle shard')
                 hand.remove(2)
                 mana -= 1
                 trade_shard(hand, deck)
@@ -85,7 +108,8 @@ def sim_turn(hand, deck, turn):
 
 def play_illuminate(hand, deck):
     options = deck[0:3]
-    print("illum options",options)
+    if debug:
+        print("illum options",options)
     if 4 in options:
         deck.remove(4)
         deck.append(8)
@@ -132,7 +156,8 @@ def play_thrive(hand, deck):
         options.append(random.choice(deck_copy))
         random.shuffle(deck_copy)
         deck_copy.remove(options[i])
-    print("thrive options ",options)
+    if debug:
+        print("thrive options ",options)
     if 4 in options:
         choose.append(4)
     if 4 in hand:
@@ -196,4 +221,10 @@ def do_mull(hand, to_toss, deck, coin):
     return hand
 
 if __name__ == '__main__':
-    print('ending hand ', do_sim(6))
+    attempts = 1000000
+    success = 0
+    for i in range(attempts):
+        if do_sim(6):
+            success += 1
+    print(success/attempts)
+
