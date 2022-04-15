@@ -21,8 +21,9 @@ def do_sim(target_turns):
     return hand
 
 def init_sim():
-    deck = [0] * 20
-    deck += [1, 1, 2, 2, 3, 3, 4, 4, 5, 6]
+    deck = [1, 1, 2, 2, 3, 3, 4, 4, 5, 6]
+    deck += [101,102,103,104,105,106,107,108,109,110]
+    deck += [101,102,103,104,105,106,107,108,109,110]
     hand = []
     
     random.shuffle(deck)
@@ -115,7 +116,7 @@ def play_illuminate(hand, deck):
     pool = list(set(filter(filt, options)))
     deck.remove(pool[0])
     deck.append(pool[0])
-    
+
 def play_thrive(hand, deck):
     deck_copy = list(set(copy.deepcopy(deck)))
     options = []
