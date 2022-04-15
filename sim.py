@@ -15,34 +15,38 @@ def do_sim(target_turns):
     turn = 0
     hand, deck, coin = init_sim()
     hand = sim_mull(hand, deck, coin)
-    if debug:
-        print('starting hand:', print_hand(hand), 'coin:', coin)
+
     while turn < target_turns:
         turn += 1
+        hand.append(deck.pop())
+        if debug:
+            print('starting hand:', print_hand(hand), 'coin:', coin)
         if debug:
             print('turn: ', turn)
-        if 5 in hand:
-            return False
-        if 6 in hand:
-            return False
-        if deck[-1] == 4:
-            return True
-        if 8 in hand:
-            if deck[-1] in [5, 6]:
-                return False
-            return True
-        if 4 in hand:
-            if deck[-1] in [5, 6]:
-                print("minion on top")
-                return False
-            if turn >= 3:
+        check = check_success(hand, deck, turn)
+        if check is not None:
+            if check:
                 return True
-            elif (turn == 2) and (7 in hand):
-                return True
+            if not check:
+                return False
         hand = sim_turn(hand, deck, turn)
     if debug:
         print("didnt find")
     return False
+
+def check_success(hand, deck, turn):
+    if 5 in hand:
+        return False
+    if 6 in hand:
+        return False
+    if 8 in hand:
+        return True
+    if 4 in hand:
+        if turn >= 3:
+            return True
+        elif (turn == 2) and (7 in hand):
+            return True
+    return None
 
 def init_sim():
     deck = [1, 1, 2, 2, 3, 3, 4, 4, 5, 6]
@@ -64,7 +68,6 @@ def sim_mull(hand, deck, coin):
 def sim_turn(hand, deck, turn):
     PLAYED_ILLUM = False
     mana = turn
-    hand.append(deck.pop())
     #switch in hand, so do nothing
     if debug:
         print("hand: ", print_hand(hand))
@@ -229,7 +232,7 @@ def do_mull(hand, to_toss, deck, coin):
     return hand
 
 def print_hand(hand):
-    hand_map = {1: "illuminate", 2: "shard", 3: "thrive", 4: "switch", 5: "twin", 6: "dwing",
+    hand_map = {1: "illuminate", 2: "shard", 3: "thrive", 4: "switch", 5: "TWIN", 6: "DWING",
                 7: "coin", 8: "free switch", 9: "free thrive"}
     pretty_hand = []
     for item in hand:
@@ -244,8 +247,11 @@ if __name__ == '__main__':
     attempts = 5
     success = 0
     for i in range(attempts):
+        if debug:
+            print("attempt:", i)
         res = do_sim(6)
-        print(res, "\n")
+        if debug:
+            print(res, "\n")
         if res:
             success += 1
     print(success/attempts)
