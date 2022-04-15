@@ -28,7 +28,7 @@ def do_sim(target_turns):
         if 4 in hand:
             if deck[-1] in [5, 6]:
                 return False
-            if turn == 3:
+            if turn >= 3:
                 return True
             elif (turn == 2) and (7 in hand):
                 return True
@@ -224,7 +224,7 @@ if __name__ == '__main__':
     attempts = 1000000
     success = 0
     for i in range(attempts):
-        if do_sim(6):
+        if do_sim(4):
             success += 1
     print(success/attempts)
 
